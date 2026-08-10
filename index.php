@@ -10,6 +10,9 @@ $biblioteca = new Biblioteca();
 // Manejar lógica de enrutamiento o acciones (GET/POST)
 $action = $_GET['action'] ?? 'libros';
 
+// ==================== LIBROS ====================
+
+// Crear libro
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'crear_libro') {
 
     $libro = new Libro(
@@ -25,44 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'crear_libro') {
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'editar_usuario') {
 
-    $biblioteca->editarUsuario(
-        $_POST['id'],
-        [
-            'nombre' => $_POST['nombre'],
-            'email' => $_POST['email'],
-            'telefono' => $_POST['telefono']
-        ]
-    );
-
-    header('Location: index.php?action=usuarios');
-    exit;
-}
-
-if ($action === 'eliminar_libro' && isset($_GET['id'])) {
-    $biblioteca->eliminarLibro($_GET['id']);
-
-    header('Location: index.php');
-    exit;
-}
-
-if ($action === 'eliminar_usuario' && isset($_GET['id'])) {
-
-    $eliminado = $biblioteca->eliminarUsuario($_GET['id']);
-
-    if (!$eliminado) {
-        echo "<script>
-                alert('No se puede eliminar el usuario porque tiene préstamos registrados.');
-                window.location.href = 'index.php?action=usuarios';
-              </script>";
-        exit;
-    }
-
-    header('Location: index.php?action=usuarios');
-    exit;
-}
-
+// Editar libro
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'editar_libro') {
 
     $biblioteca->editarLibro(
@@ -79,6 +46,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'editar_libro') {
     exit;
 }
 
+
+// Eliminar libro
+if ($action === 'eliminar_libro' && isset($_GET['id'])) {
+
+    $biblioteca->eliminarLibro($_GET['id']);
+
+    header('Location: index.php');
+    exit;
+}
+
+
+// ==================== USUARIOS ====================
+
+// Crear usuario
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'crear_usuario') {
 
     $usuario = new Usuario(
@@ -93,6 +74,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'crear_usuario') {
     exit;
 }
 
+
+// Editar usuario
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'editar_usuario') {
+
+    $biblioteca->editarUsuario(
+        $_POST['id'],
+        [
+            'nombre' => $_POST['nombre'],
+            'email' => $_POST['email'],
+            'telefono' => $_POST['telefono']
+        ]
+    );
+
+    header('Location: index.php?action=usuarios');
+    exit;
+}
+
+
+// Eliminar usuario
+if ($action === 'eliminar_usuario' && isset($_GET['id'])) {
+
+    $eliminado = $biblioteca->eliminarUsuario($_GET['id']);
+
+    if (!$eliminado) {
+        echo "<script>
+                alert('No se puede eliminar el usuario porque tiene préstamos registrados.');
+                window.location.href = 'index.php?action=usuarios';
+              </script>";
+        exit;
+    }
+
+    header('Location: index.php?action=usuarios');
+    exit;
+}
+
+
+// ==================== PRÉSTAMOS ====================
+
+// Prestar libro
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'prestar_libro') {
 
     $biblioteca->prestarLibro(
@@ -104,6 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'prestar_libro') {
     exit;
 }
 
+
+// Devolver libro
 if ($action === 'devolver_libro' && isset($_GET['id'])) {
 
     $biblioteca->devolverLibro($_GET['id']);
@@ -112,9 +134,13 @@ if ($action === 'devolver_libro' && isset($_GET['id'])) {
     exit;
 }
 
+
+// ==================== DATOS PARA LA VISTA ====================
+
 $libros = $biblioteca->obtenerLibros();
 $usuarios = $biblioteca->obtenerUsuarios();
 $prestamos = $biblioteca->obtenerPrestamosActivos();
+
 ?>
 
 <!DOCTYPE html>
@@ -124,34 +150,24 @@ $prestamos = $biblioteca->obtenerPrestamosActivos();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Biblioteca</title>
-    <style>
-        /* TODO: Agregar estilos CSS */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
 
-        nav {
-            margin-bottom: 20px;
-            background: #eee;
-            padding: 10px;
-        }
-
-        nav a {
-            margin-right: 15px;
-            text-decoration: none;
-            color: #333;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+    <header>
+        <h1>📚 Sistema de Gestión de Biblioteca</h1>
+        <p>Administración de libros, usuarios y préstamos</p>
+    </header>
+    <nav>
+        <a href="index.php?action=libros">📚 Libros</a>
+        <a href="index.php?action=usuarios">👥 Usuarios</a>
+        <a href="index.php?action=prestamos">📖 Préstamos</a>
+    </nav>
+
     <div class="container">
+
+        <!-- Formulario para editar un libro -->
         <?php if ($action === 'editar_libro' && isset($_GET['id'])): ?>
 
             <?php $libro = $biblioteca->buscarLibro($_GET['id']); ?>
@@ -198,6 +214,8 @@ $prestamos = $biblioteca->obtenerPrestamosActivos();
             <a href="index.php">Cancelar</a>
 
         <?php endif; ?>
+
+        <!-- Gestión de libros -->
         <?php if ($action === 'libros'): ?>
 
             <h2>Libros</h2>
@@ -224,11 +242,11 @@ $prestamos = $biblioteca->obtenerPrestamosActivos();
                             <td><?= $libro['cantidad'] ?></td>
 
                             <td>
-                                <a href="index.php?action=editar_libro&id=<?= $libro['id'] ?>">
+                                <a class="accion editar" href="index.php?action=editar_libro&id=<?= $libro['id'] ?>">
                                     Editar
                                 </a>
 
-                                <a href="index.php?action=eliminar_libro&id=<?= $libro['id'] ?>">
+                                <a class="accion eliminar" href="index.php?action=eliminar_libro&id=<?= $libro['id'] ?>">
                                     Eliminar
                                 </a>
                             </td>
@@ -297,6 +315,8 @@ $prestamos = $biblioteca->obtenerPrestamosActivos();
             <a href="index.php?action=usuarios">Cancelar</a>
 
         <?php endif; ?>
+
+        <!-- Gestión de usuarios -->
         <?php if ($action === 'usuarios'): ?>
 
             <h2>Usuarios</h2>
@@ -335,11 +355,11 @@ $prestamos = $biblioteca->obtenerPrestamosActivos();
                             <td><?= $usuario['telefono'] ?></td>
 
                             <td>
-                                <a href="index.php?action=editar_usuario&id=<?= $usuario['id'] ?>">
+                                <a class="accion editar" href="index.php?action=editar_usuario&id=<?= $usuario['id'] ?>">
                                     Editar
                                 </a>
 
-                                <a href="index.php?action=eliminar_usuario&id=<?= $usuario['id'] ?>">
+                                <a class="accion eliminar" href="index.php?action=eliminar_usuario&id=<?= $usuario['id'] ?>">
                                     Eliminar
                                 </a>
                             </td>
@@ -350,6 +370,7 @@ $prestamos = $biblioteca->obtenerPrestamosActivos();
 
         <?php endif; ?>
 
+        <!-- Gestión de préstamos -->
         <?php if ($action === 'prestamos'): ?>
             <h2>Préstamos Activos</h2>
 
@@ -404,7 +425,7 @@ $prestamos = $biblioteca->obtenerPrestamosActivos();
                             <td><?= $prestamo['fecha_prestamo'] ?></td>
                             <td><?= $prestamo['estado'] ?></td>
                             <td>
-                                <a href="index.php?action=devolver_libro&id=<?= $prestamo['id'] ?>">
+                                <a class="accion devolver" href="index.php?action=devolver_libro&id=<?= $prestamo['id'] ?>">
                                     Devolver
                                 </a>
                             </td>
