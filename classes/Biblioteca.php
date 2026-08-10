@@ -51,12 +51,26 @@ class Biblioteca
 
     public function eliminarLibro($id)
     {
-        // Eliminar libro de base de datos
-        $sql = "DELETE FROM libros
-        WHERE id = ?";
+        try {
+            $this->conn->beginTransaction();
 
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$id]);
+            // Eliminar libro de base de datos
+            $sql = "DELETE FROM prestamos WHERE libro_id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
+
+            // Eliminar libro
+            $sql = "DELETE FROM libros WHERE id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
+
+            $this->conn->commit();
+
+            return true;
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
+            return false;
+        }
     }
 
     public function obtenerLibros()
@@ -120,26 +134,26 @@ class Biblioteca
 
     public function eliminarUsuario($id)
     {
-        // Verificar si el usuario tiene préstamos
-        $sql = "SELECT COUNT(*) FROM prestamos WHERE usuario_id = ?";
+        try {
+            $this->conn->beginTransaction();
 
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$id]);
+            // Verificar si el usuario tiene préstamos
+            $sql = "DELETE FROM prestamos WHERE usuario_id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
 
-        $cantidadPrestamos = $stmt->fetchColumn();
+            // Eliminar usuario
+            $sql = "DELETE FROM usuarios WHERE id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
 
-        // No permitir eliminar si tiene préstamos
-        if ($cantidadPrestamos > 0) {
+            $this->conn->commit();
+
+            return true;
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
             return false;
         }
-
-        // Eliminar usuario
-        $sql = "DELETE FROM usuarios WHERE id = ?";
-
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$id]);
-
-        return true;
     }
 
     public function obtenerUsuarios()

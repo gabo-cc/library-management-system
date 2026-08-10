@@ -50,7 +50,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'editar_libro') {
 // Eliminar libro
 if ($action === 'eliminar_libro' && isset($_GET['id'])) {
 
-    $biblioteca->eliminarLibro($_GET['id']);
+    $eliminado = $biblioteca->eliminarLibro($_GET['id']);
+
+    if (!$eliminado) {
+        echo "<script>
+                alert('No se puede eliminar el libro porque tiene préstamos registrados.');
+                window.location.href = 'index.php';
+              </script>";
+        exit;
+    }
 
     header('Location: index.php');
     exit;
