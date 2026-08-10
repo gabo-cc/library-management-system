@@ -1,53 +1,139 @@
-# Tarea: Sistema de Gestión de Biblioteca (Mini-Aplicación OOP)
+ 📚 Sistema de Gestión de Biblioteca
 
-## Objetivo
-Completar la implementación de un sistema de gestión de biblioteca utilizando PHP y Programación Orientada a Objetos (OOP). Se te proporciona la estructura base de archivos y clases. Tu misión es rellenar la lógica faltante.
+Mini-aplicación web desarrollada con **PHP y MySQL** para gestionar libros, usuarios y préstamos de una biblioteca.
 
-## Configuración Inicial
+El sistema permite administrar:
 
-1.  **Base de Datos**:
-    *   Abre tu gestor de base de datos (phpMyAdmin, MySQL Workbench, etc.).
-    *   Importa o ejecuta el script SQL contenido en el archivo `biblioteca.sql`.
-    *   Esto creará la base de datos `biblioteca` y las tablas necesarias (`libros`, `usuarios`, `prestamos`).
+- 📚 Libros
+- 👤 Usuarios
+- 📖 Préstamos
+- 🔄 Devoluciones
 
-2.  **Servidor Local**:
-    *   Asegúrate de ejecutar este proyecto dentro de un servidor local (como XAMPP, Laragon, o el servidor integrado de PHP).
+## 🛠️ Tecnologías utilizadas
 
-## Instrucciones de Implementación
+- **PHP**
+- **MySQL**
+- **PDO**
+- **HTML5**
+- **CSS3**
 
-Busca los comentarios `// TODO` en los archivos para saber exactamente qué implementar. Se recomienda seguir este orden:
+## 📁 Estructura del proyecto
 
-### Paso 1: Conexión a Base de Datos
-**Archivo:** `classes/Database.php`
-*   Implementa el método `getConnection()` para retornar una conexión PDO válida a la base de datos `biblioteca`.
-*   Asegúrate de que las credenciales (usuario/password) coincidan con tu configuración local.
+```text
+library-management-system/
+│
+├── classes/
+│   ├── Biblioteca.php
+│   ├── Database.php
+│   ├── Libro.php
+│   ├── Prestamo.php
+│   └── Usuario.php
+│
+├── css/
+│   └── style.css
+│
+├── biblioteca.sql
+├── index.php
+└── README.md
+```
 
-### Paso 2: Clases de Modelo
-**Archivos:** `classes/Libro.php`, `classes/Usuario.php`, `classes/Prestamo.php`
-*   Completa los **constructores** para inicializar los atributos de la clase.
-*   Implementa todos los métodos **Getters** y **Setters** para cada propiedad privada.
+## 🚀 Instalación
 
-### Paso 3: Lógica de Negocio (Gestor)
-**Archivo:** `classes/Biblioteca.php`
-Esta clase centraliza la funcionalidad. Debes implementar:
-*   **Constructor**: Inicializar la conexión a la base de datos usando la clase `Database`.
-*   **CRUD de Libros**: Métodos `agregarLibro`, `editarLibro`, `eliminarLibro`, `obtenerLibros`.
-*   **CRUD de Usuarios**: Métodos `agregarUsuario`, `editarUsuario`, `eliminarUsuario`, `obtenerUsuarios`.
-*   **Gestión de Préstamos**:
-    *   `prestarLibro($libro_id, $usuario_id)`: Debe crear el registro en la tabla `prestamos` Y disminuir el campo `cantidad` en la tabla `libros`.
-    *   `devolverLibro($prestamo_id)`: Debe actualizar la `fecha_devolucion` y `estado` en `prestamos`, Y aumentar el campo `cantidad` en la tabla `libros`.
+### 1. Clonar el repositorio
 
-### Paso 4: Interfaz de Usuario
-**Archivo:** `index.php`
-*   Implementa la lógica para recibir parámetros (por ejemplo `?action=crear_libro`) y llamar a los métodos correspondientes de la clase `Biblioteca`.
-*   Diseña la interfaz HTML para:
-    *   Listar libros, usuarios y préstamos activos.
-    *   Formularios para agregar nuevos libros y usuarios.
-    *   Botones/Enlaces para "Prestar", "Devolver", "Editar" y "Eliminar".
+Se debe clonar el repositorio utilizando Git:
 
-## Requisitos
-*   El código debe ser limpio y ordenado.
-*   La lógica de negocio debe estar encapsulada en las clases, no en la vista (`index.php` debe usarse principalmente para mostrar datos y capturar input).
-*   No es necesario un sistema de login/autenticación.
+```bash
+git clone https://github.com/gabo-cc/library-management-system.git
+```
 
-¡Mucho éxito con tu implementación!
+Luego, ingresar al directorio del proyecto:
+
+```bash
+cd library-management-system
+```
+
+### 2. Configurar la base de datos
+
+Se debe importar el archivo `biblioteca.sql` utilizando **phpMyAdmin** o **MySQL Workbench**.
+
+Este archivo se encarga de crear la base de datos `biblioteca` y las tablas necesarias para el funcionamiento del sistema.
+
+### 3. Configurar la conexión a MySQL
+
+Se deben configurar las credenciales de conexión a MySQL en:
+
+```text
+classes/Database.php
+```
+
+Ejemplo:
+
+```php
+private $host = 'localhost';
+private $db_name = 'biblioteca';
+private $username = 'root';
+private $password = '';
+```
+
+> **Nota:** La contraseña debe coincidir con la configuración de MySQL en el entorno local.
+
+### 4. Ejecutar el proyecto con XAMPP
+
+Si se utiliza **XAMPP**, se deben iniciar los servicios:
+
+- **Apache**
+- **MySQL**
+
+Luego, colocar el proyecto dentro de la carpeta:
+
+```text
+htdocs/
+```
+
+Por ejemplo:
+
+```text
+C:\xampp\htdocs\library-management-system\
+```
+
+Después, abrir el navegador y acceder a:
+
+```text
+http://localhost/library-management-system/
+```
+
+### 5. Ejecutar con el servidor integrado de PHP
+
+También es posible ejecutar el proyecto utilizando el servidor integrado de PHP.
+
+Desde la carpeta raíz del proyecto, ejecutar:
+
+```bash
+php -S localhost:8000
+```
+
+Luego, abrir el navegador y acceder a:
+
+```text
+http://localhost:8000
+```
+
+## 🗄️ Base de datos
+
+La aplicación utiliza una base de datos MySQL llamada:
+
+```text
+biblioteca
+```
+
+El archivo `biblioteca.sql` contiene la estructura necesaria para crear la base de datos y sus tablas.
+
+## 📌 Requisitos
+
+Antes de ejecutar el proyecto, se recomienda contar con:
+
+- **PHP 7.4 o superior**
+- **MySQL 5.7 o superior**
+- **Apache** (si se utiliza XAMPP)
+- **Git** para clonar el repositorio
